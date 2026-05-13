@@ -2,7 +2,7 @@ use crate::types::Square;
 use std::ops::*;
 
 #[repr(transparent)]
-#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Default)]
 pub struct Bitboard(u128);
 
 impl Bitboard {

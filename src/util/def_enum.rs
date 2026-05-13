@@ -34,7 +34,7 @@ macro_rules! def_enum {
             }
 
             $vis const COUNT: usize = <[Self]>::len(&[$(Self::$var),+]);
-            $vis const ALL: [Self; Self::COUNT] = [$(Self::$var),+];
+            $vis const ALL: &[Self; Self::COUNT] = &[$(Self::$var),+];
         }
 
         impl<T> ::core::ops::Index<$name> for [T; $name::COUNT] {
