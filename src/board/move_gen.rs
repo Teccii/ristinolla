@@ -3,7 +3,7 @@ use arrayvec::ArrayVec;
 use std::ops::{Deref, DerefMut};
 
 #[derive(Debug, Clone)]
-pub struct MoveList(ArrayVec<Square, {Square::COUNT}>);
+pub struct MoveList(ArrayVec<Square, { Square::COUNT }>);
 
 impl MoveList {
     #[inline]
@@ -13,7 +13,7 @@ impl MoveList {
 }
 
 impl Deref for MoveList {
-    type Target = ArrayVec<Square, {Square::COUNT}>;
+    type Target = ArrayVec<Square, { Square::COUNT }>;
 
     #[inline]
     fn deref(&self) -> &Self::Target {

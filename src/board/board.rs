@@ -6,7 +6,7 @@ use enum_map::EnumMap;
 
 /*----------------------------------------------------------------*/
 
-#[derive(Copy, Clone, PartialEq, Eq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum TerminalState {
     Victory(Piece),
     Draw,
@@ -64,19 +64,25 @@ pub struct Board {
     pub(super) prev_mv: Option<Square>,
     pub(super) small: [TicTacToe; 9],
     pub(super) large: TicTacToe,
-    hash: u64,
-    stm: Piece,
+    pub(super) stm: Piece,
+    pub(super) hash: u64,
+    pub(super) ply: u8,
 }
 
 impl Board {
+    #[inline]
+    pub fn stm(&self) -> Piece {
+        self.stm
+    }
+
     #[inline]
     pub fn hash(&self) -> u64 {
         self.hash
     }
 
     #[inline]
-    pub fn stm(&self) -> Piece {
-        self.stm
+    pub fn ply(&self) -> u8 {
+        self.ply
     }
 
     /*----------------------------------------------------------------*/
@@ -124,7 +130,7 @@ impl Board {
     /*----------------------------------------------------------------*/
 
     #[inline]
-    fn xor_piece(&mut self, piece: Piece, sq: Square) {
+    pub(super) fn xor_piece(&mut self, piece: Piece, sq: Square) {
         self.hash ^= ZOBRIST.pieces[piece][sq];
 
         let indices = sq.indices();
@@ -132,7 +138,7 @@ impl Board {
     }
 
     #[inline]
-    fn xor_move(&mut self, mv: Square) {
+    pub(super) fn xor_move(&mut self, mv: Square) {
         if let Some(mv) = self.prev_mv {
             self.hash ^= ZOBRIST.prev_move[mv];
         }
@@ -141,7 +147,7 @@ impl Board {
     }
 
     #[inline]
-    fn toggle_stm(&mut self) {
+    pub(super) fn toggle_stm(&mut self) {
         self.hash ^= ZOBRIST.stm;
         self.stm = !self.stm;
     }
