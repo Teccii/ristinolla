@@ -3,7 +3,12 @@ name = "ristinolla"
 version = "0.1.0"
 edition = "2024"
 
+[features]
+tune = []
+
 [dependencies]
 arrayvec = "0.7.6"
+atomic-wait = "1.1.0"
 colored = "3.1.1"
 enum-map = "2.7.3"
+thiserror = "2.0.18"

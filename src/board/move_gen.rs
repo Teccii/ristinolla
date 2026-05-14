@@ -2,6 +2,8 @@ use crate::{board::Board, types::Square};
 use arrayvec::ArrayVec;
 use std::ops::{Deref, DerefMut};
 
+/*----------------------------------------------------------------*/
+
 #[derive(Debug, Clone)]
 pub struct MoveList(ArrayVec<Square, { Square::COUNT }>);
 
@@ -27,6 +29,8 @@ impl DerefMut for MoveList {
         &mut self.0
     }
 }
+
+/*----------------------------------------------------------------*/
 
 impl Board {
     #[inline]
@@ -58,5 +62,21 @@ impl Board {
         }
 
         moves
+    }
+
+    #[inline]
+    pub fn is_legal(&self, mv: Square) -> bool {
+        if self.terminal_state().is_some() {
+            return false;
+        }
+
+        if let Some(prev_mv) = self.prev_mv {
+            let index = prev_mv.indices().1;
+            if self.small[index].terminal_state().is_none() {
+                return mv.indices().0 == index && self.piece_on(mv).is_none();
+            }
+        }
+
+        self.small[mv.indices().0].terminal_state().is_none() && self.piece_on(mv).is_none()
     }
 }

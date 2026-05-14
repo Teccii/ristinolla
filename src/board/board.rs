@@ -14,7 +14,7 @@ pub enum TerminalState {
 
 /*----------------------------------------------------------------*/
 
-#[derive(Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct TicTacToe(EnumMap<Piece, u16>);
 
 impl TicTacToe {
@@ -59,7 +59,7 @@ impl TicTacToe {
 
 /*----------------------------------------------------------------*/
 
-#[derive(Copy, Clone, Default)]
+#[derive(Debug, Copy, Clone, Default)]
 pub struct Board {
     pub(super) prev_mv: Option<Square>,
     pub(super) small: [TicTacToe; 9],
