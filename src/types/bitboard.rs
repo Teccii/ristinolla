@@ -15,12 +15,12 @@ impl Bitboard {
 
     #[inline]
     pub const fn next_square(self) -> Square {
-        Square::index(self.0.trailing_zeros() as usize)
+        Square::index(127 - self.0.leading_zeros() as usize)
     }
 
     #[inline]
     pub const fn try_next_square(self) -> Option<Square> {
-        Square::try_index(self.0.trailing_zeros() as usize)
+        Square::try_index(127usize.wrapping_sub(self.0.leading_zeros() as usize))
     }
 
     /*----------------------------------------------------------------*/
