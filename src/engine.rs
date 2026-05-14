@@ -1,7 +1,10 @@
-use crate::search::{DEFAULT_OVERHEAD, MAX_THREADS, SearchInfo, SearchLimit};
-use crate::types::Square;
-use crate::ugi::UgiParseError;
-use crate::{board::Board, position::Position, search::Searcher, ugi::UgiCommand};
+use crate::{
+    board::{Board, TerminalState},
+    position::Position,
+    search::{DEFAULT_OVERHEAD, MAX_THREADS, SearchInfo, SearchLimit, Searcher},
+    types::{Piece, Square},
+    ugi::{UgiCommand, UgiParseError},
+};
 use std::time::{Duration, Instant};
 /*----------------------------------------------------------------*/
 
@@ -75,6 +78,8 @@ impl Engine {
 
     #[inline]
     pub fn handle(&mut self, input: &str) -> Abort {
+        use UgiCommand::*;
+
         let cmd = match UgiCommand::parse(input, self.pos.board()) {
             Ok(cmd) => cmd,
             Err(e) => {
@@ -84,19 +89,29 @@ impl Engine {
         };
 
         match cmd {
-            UgiCommand::Ugi => self.ugi(),
-            UgiCommand::NewGame => self.searcher.newgame(),
-            UgiCommand::IsReady => println!("readyok"),
-            UgiCommand::Display => self.display(),
-            UgiCommand::Position { board, moves } => self.set_pos(board, moves),
-            UgiCommand::Search(limits) => self.search(limits),
-            UgiCommand::Perft { depth, bulk } => self.perft(depth, bulk),
-            UgiCommand::SplitPerft { depth, bulk } => self.splitperft(depth, bulk),
-            UgiCommand::SetOption { name, value } => self.set_option(name, value),
-            UgiCommand::Bench { depth } => self.bench(depth),
-            UgiCommand::Wait => self.wait(),
-            UgiCommand::Stop => self.stop(),
-            UgiCommand::Quit => return self.quit(),
+            Ugi => self.ugi(),
+            NewGame => self.searcher.newgame(),
+            IsReady => println!("readyok"),
+            Display => self.display(),
+            Position { board, moves } => self.set_pos(board, moves),
+            Search(limits) => self.search(limits),
+            Perft { depth, bulk } => self.perft(depth, bulk),
+            SplitPerft { depth, bulk } => self.splitperft(depth, bulk),
+            SetOption { name, value } => self.set_option(name, value),
+            Bench { depth } => self.bench(depth),
+            QueryTurn => println!("response {}", self.pos.stm() == Piece::X),
+            QueryGameOver => println!("response {}", self.pos.terminal_state().is_some()),
+            QueryResult => match self.pos.terminal_state() {
+                Some(TerminalState::Victory(piece)) => match piece {
+                    Piece::X => println!("response p1win"),
+                    Piece::O => println!("response p2win"),
+                },
+                Some(TerminalState::Draw) => println!("response draw"),
+                None => println!("response gamenotover"),
+            },
+            Wait => self.wait(),
+            Stop => self.stop(),
+            Quit => return self.quit(),
         }
 
         Abort::No
@@ -132,7 +147,7 @@ impl Engine {
             println!("info string Already Searching");
             return;
         }
-        
+
         self.searcher.search(
             self.pos.clone(),
             limits,

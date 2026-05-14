@@ -74,7 +74,12 @@ impl Searcher {
         info: SearchInfo,
     ) {
         self.shared.num_searching.fetch_add(1, Ordering::Relaxed);
-        self.shared.time_man.init(pos.stm(), &limits, options.move_overhead, options.soft_target);
+        self.shared.time_man.init(
+            pos.stm(),
+            &limits,
+            options.move_overhead,
+            options.soft_target,
+        );
 
         let root_moves = limits
             .iter()

@@ -1,9 +1,9 @@
+use crate::search::PrincipalVariation;
 use crate::{
     score::Score,
     search::{SharedData, ThreadData},
     types::Square,
 };
-use crate::search::PrincipalVariation;
 
 #[derive(Debug, Clone)]
 pub enum SearchInfo {

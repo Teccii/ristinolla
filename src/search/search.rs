@@ -41,7 +41,14 @@ pub fn id_loop(
         score = new_score;
 
         if thread.id == 0 {
-            info.update(thread, shared, &thread.root_pv, score, completed_depth, false);
+            info.update(
+                thread,
+                shared,
+                &thread.root_pv,
+                score,
+                completed_depth,
+                false,
+            );
         }
 
         if thread.id == 0
@@ -71,7 +78,14 @@ pub fn id_loop(
     }
 
     if thread.id == 0 {
-        info.update(thread, shared, &thread.root_pv, score, completed_depth, true);
+        info.update(
+            thread,
+            shared,
+            &thread.root_pv,
+            score,
+            completed_depth,
+            true,
+        );
         info.best_move(best_move.unwrap());
 
         atomic_wait::wake_all(&shared.num_searching);
@@ -160,15 +174,10 @@ impl Default for PrincipalVariation {
 
 fn eval(board: &Board) -> Score {
     const PSQT: [i32; Square::COUNT] = [
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
-        5,  20, 5,  5,  20, 5,  5,  20, 5,
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
-        5,  20, 5,  5,  20, 5,  5,  20, 5,
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
-        5,  20, 5,  5,  20, 5,  5,  20, 5,
-        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5, 10, 10, 5,
+        10, 10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5, 10,
+        10, 5, 10, 10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5,
+        10, 10, 5, 10,
     ];
 
     let mut score = Score(0);
@@ -178,7 +187,7 @@ fn eval(board: &Board) -> Score {
         match board.piece_on(sq) {
             Some(p) if p == stm => score += PSQT[sq],
             Some(p) if p != stm => score -= PSQT[sq],
-            _ => { }
+            _ => {}
         }
     }
 

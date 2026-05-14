@@ -21,6 +21,9 @@ pub enum UgiCommand {
     SplitPerft { depth: u8, bulk: bool },
     Bench { depth: u8 },
     SetOption { name: String, value: String },
+    QueryTurn,
+    QueryGameOver,
+    QueryResult,
     Wait,
     Stop,
     Quit,
@@ -114,6 +117,15 @@ impl UgiCommand {
                 let value = reader.next().ok_or(MissingOptionValue)?.to_string();
                 Ok(SetOption { name, value })
             }
+            "query" => {
+                let query = reader.next().ok_or(MissingCommand)?;
+                match query {
+                    "p1turn" => Ok(QueryTurn),
+                    "gameover" => Ok(QueryGameOver),
+                    "result" => Ok(QueryResult),
+                    _ => Err(UnknownCommand(cmd.to_string() + " " + query)),
+                }
+            }
             _ => Err(UnknownCommand(cmd.to_string())),
         }
     }
@@ -206,10 +218,14 @@ impl UgiCommand {
         while let Some(token) = reader.next() {
             match token {
                 "infinite" => {}
-                "xtime" => limits.push(XTime(parse_int::<i64>(&mut reader, token)?.max(0) as u64)),
-                "otime" => limits.push(OTime(parse_int::<i64>(&mut reader, token)?.max(0) as u64)),
-                "xinc" => limits.push(XInc(parse_int(&mut reader, token)?)),
-                "oinc" => limits.push(XInc(parse_int(&mut reader, token)?)),
+                "xtime" | "p1time" => {
+                    limits.push(XTime(parse_int::<i64>(&mut reader, token)?.max(0) as u64))
+                }
+                "otime" | "p2time" => {
+                    limits.push(OTime(parse_int::<i64>(&mut reader, token)?.max(0) as u64))
+                }
+                "xinc" | "p1inc" => limits.push(XInc(parse_int(&mut reader, token)?)),
+                "oinc" | "p2inc" => limits.push(XInc(parse_int(&mut reader, token)?)),
                 "movetime" => limits.push(MoveTime(parse_int(&mut reader, token)?)),
                 "movestogo" => limits.push(MovesToGo(parse_int(&mut reader, token)?)),
                 "depth" => limits.push(Depth(parse_int(&mut reader, token)?)),
