@@ -3,7 +3,7 @@ use enum_map::Enum;
 use std::{fmt, str::FromStr};
 
 def_enum! {
-    #[derive(Debug, Copy, Clone, PartialEq, Eq, Enum)]
+    #[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Enum)]
     pub enum Rank : u8 {
         First,
         Second,

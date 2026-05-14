@@ -41,6 +41,7 @@ impl Board {
         }
 
         println!("╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝");
+        println!("{}: {}", String::from("FEN").bright_green(), self.to_fen());
         println!(
             "{}: {:#016X}",
             String::from("Zobrist Key").bright_green(),
