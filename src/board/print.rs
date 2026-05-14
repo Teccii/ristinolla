@@ -1,5 +1,8 @@
-use crate::board::Board;
-use crate::types::{File, Piece, Rank, Square};
+use crate::{
+    board::Board,
+    types::{File, Piece, Rank, Square},
+};
+use colored::Colorize;
 
 impl Board {
     #[inline]
@@ -11,13 +14,17 @@ impl Board {
 
             for &file in File::ALL {
                 let sq = Square::new(file, rank);
-                let ch = match self.piece_on(sq) {
-                    Some(Piece::X) => 'X',
-                    Some(Piece::O) => 'O',
-                    None => ' ',
+                let piece = if let Some(piece) = self.piece_on(sq) {
+                    match piece {
+                        Piece::X => String::from(char::from(piece)).bright_green(),
+                        Piece::O => String::from(char::from(piece)).bright_blue(),
+                    }
+                    .to_string()
+                } else {
+                    String::from(" ")
                 };
 
-                print!(" {} ", ch);
+                print!(" {} ", piece);
                 if matches!(file, File::C | File::F | File::I) {
                     print!("║");
                 } else {
@@ -34,7 +41,18 @@ impl Board {
         }
 
         println!("╚═══╧═══╧═══╩═══╧═══╧═══╩═══╧═══╧═══╝");
-        println!("Zobrist Key: {:#016X}", self.hash());
-        println!("Side To Move: {:?}", self.stm());
+        println!(
+            "{}: {:#016X}",
+            String::from("Zobrist Key").bright_green(),
+            self.hash()
+        );
+        if let Some(mv) = self.prev_mv {
+            println!("{}: {mv}", String::from("Previous Move").bright_green())
+        }
+        println!(
+            "{}: {}",
+            String::from("Side To Move").bright_green(),
+            self.stm()
+        );
     }
 }

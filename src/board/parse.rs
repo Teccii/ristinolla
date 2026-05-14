@@ -1,6 +1,5 @@
-use crate::board::TerminalState;
 use crate::{
-    board::Board,
+    board::{Board, TerminalState},
     types::{File, Piece, Rank, Square},
 };
 
@@ -22,10 +21,13 @@ impl Board {
 
         let mut board = Board::default();
         board.ply = ply.parse::<u8>().ok()?.max(0);
-
-        match stm.chars().next() {
-            Some('x') | Some('X') => {}
-            Some('o') | Some('O') => board.toggle_stm(),
+        match stm
+            .chars()
+            .next()
+            .and_then(|c| Piece::try_from(c.to_ascii_lowercase()).ok())
+        {
+            Some(Piece::X) => {}
+            Some(Piece::O) => board.toggle_stm(),
             _ => return None,
         }
 
@@ -41,17 +43,10 @@ impl Board {
                 if let Some(empty) = p.to_digit(10) {
                     file += empty as usize;
                 } else {
-                    let piece = match p {
-                        'x' | 'X' => Some(Piece::X),
-                        'o' | 'O' => Some(Piece::O),
-                        _ => None,
-                    };
+                    let piece = Piece::try_from(p.to_ascii_lowercase()).ok()?;
                     let sq = Square::new(File::try_index(file)?, rank);
 
-                    if let Some(piece) = piece {
-                        board.xor_piece(piece, sq);
-                    }
-
+                    board.xor_piece(piece, sq);
                     file += 1;
                 }
             }
