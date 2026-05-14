@@ -49,7 +49,7 @@ impl TicTacToe {
             }
         }
 
-        if self.0[Piece::X] & self.0[Piece::O] == 0b111111111 {
+        if self.0[Piece::X] | self.0[Piece::O] == 0b111111111 {
             return Some(TerminalState::Draw);
         }
 

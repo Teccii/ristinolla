@@ -31,6 +31,10 @@ impl DerefMut for MoveList {
 impl Board {
     #[inline]
     pub fn gen_moves(&self) -> MoveList {
+        if self.terminal_state().is_some() {
+            return MoveList::new();
+        }
+
         let mut moves = MoveList::new();
         if let Some(mv) = self.prev_mv {
             let index = mv.indices().1;
