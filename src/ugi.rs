@@ -181,7 +181,7 @@ impl UgiCommand {
 
     #[inline]
     fn parse_go(
-        mut reader: SplitAsciiWhitespace,
+        reader: SplitAsciiWhitespace,
         board: &Board,
     ) -> Result<UgiCommand, UgiParseError> {
         use SearchLimit::*;

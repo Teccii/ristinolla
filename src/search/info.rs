@@ -1,7 +1,6 @@
-use crate::search::PrincipalVariation;
 use crate::{
     score::Score,
-    search::{SharedData, ThreadData},
+    search::{PrincipalVariation, SharedData, ThreadData},
     types::Square,
 };
 
@@ -48,7 +47,7 @@ impl SearchInfo {
 
     #[inline]
     pub fn best_move(&mut self, best_move: Square) {
-        let SearchInfo::Ugi { minimal } = self else {
+        let SearchInfo::Ugi { minimal: _minimal } = self else {
             return;
         };
 

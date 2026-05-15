@@ -74,7 +74,7 @@ pub fn thread_loop(id: usize, mut rx: Receiver<ThreadCommand>, mut shared: Arc<S
             ThreadCommand::Search {
                 pos,
                 root_moves,
-                options,
+                options: _options,
                 info,
             } => {
                 thread.reset();

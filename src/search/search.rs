@@ -1,5 +1,5 @@
-use crate::board::{Board, SplitMix64, TerminalState};
 use crate::{
+    board::{Board, TerminalState},
     position::Position,
     score::Score,
     search::{SearchInfo, SharedData, ThreadData},
@@ -227,9 +227,9 @@ pub fn search<Node: NodeType>(
         }
     }
 
-    let mut best_move = None;
+    let mut _best_move = None;
     let mut best_score = Score::NONE;
-    let mut move_count = 0;
+    let mut _move_count = 0;
 
     for &mv in pos.board().gen_moves().iter() {
         if Node::ROOT && !thread.root_moves.contains(&mv) {
@@ -239,7 +239,7 @@ pub fn search<Node: NodeType>(
         pos.make_move(mv);
         let score = -search::<Node::Next>(pos, thread, shared, depth - DEPTH_SCALE, ply + 1);
         pos.unmake_move();
-        move_count += 1;
+        _move_count += 1;
 
         if thread.stop {
             return Score(0);
@@ -250,7 +250,7 @@ pub fn search<Node: NodeType>(
             let (parent, child) = (parent.last_mut().unwrap(), child.first().unwrap());
             parent.pv.update(mv, &child.pv);
 
-            best_move = Some(mv);
+            _best_move = Some(mv);
             best_score = score;
         }
     }
