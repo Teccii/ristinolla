@@ -95,6 +95,14 @@ impl Board {
             }
         }
 
-        fen + &format!(" {}", self.stm)
+        let prev_mv = if let Some(prev_mv) = self.prev_mv {
+            &format!(" {prev_mv}")
+        } else {
+            " -"
+        };
+
+        fen += &format!(" {}", self.stm);
+        fen += &format!(" {}", self.ply);
+        fen + prev_mv
     }
 }

@@ -3,6 +3,7 @@ use crate::{
     types::{Piece, Square},
 };
 use enum_map::EnumMap;
+use std::cmp::Ordering;
 
 /*----------------------------------------------------------------*/
 
@@ -90,13 +91,27 @@ impl Board {
     #[inline]
     pub fn terminal_state(&self) -> Option<TerminalState> {
         self.large.terminal_state().or_else(|| {
+            let mut won_boards: EnumMap<Piece, usize> = EnumMap::default();
+
             for i in 0..9 {
+                if let Some(terminal_state) = self.small[i].terminal_state() {
+                    if let TerminalState::Victory(p) = terminal_state {
+                        won_boards[p] += 1;
+                    }
+                } else {
+                    return None;
+                }
+
                 if self.small[i].terminal_state().is_none() {
                     return None;
                 }
             }
 
-            Some(TerminalState::Draw)
+            match won_boards[Piece::X].cmp(&won_boards[Piece::O]) {
+                Ordering::Greater => Some(TerminalState::Victory(Piece::X)),
+                Ordering::Less => Some(TerminalState::Victory(Piece::O)),
+                Ordering::Equal => Some(TerminalState::Draw),
+            }
         })
     }
 
