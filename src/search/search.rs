@@ -26,7 +26,7 @@ pub fn id_loop(
     'id: loop {
         thread.sel_depth = 0;
 
-        let new_score = search::<Root>(&mut pos, thread, shared, depth * DEPTH_SCALE, 0);
+        let new_score = search::<Root>(&mut pos, thread, shared, depth * DEPTH_SCALE, 0, -Score::INF, Score::INF);
         thread.nodes.flush();
 
         if depth > 1 && thread.stop {
@@ -173,11 +173,17 @@ impl Default for PrincipalVariation {
 /*----------------------------------------------------------------*/
 
 fn eval(board: &Board) -> Score {
+    #[rustfmt::skip]
     const PSQT: [i32; Square::COUNT] = [
-        10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5, 10, 10, 5,
-        10, 10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5, 10,
-        10, 5, 10, 10, 5, 10, 10, 5, 10, 10, 5, 10, 5, 20, 5, 5, 20, 5, 5, 20, 5, 10, 5, 10, 10, 5,
-        10, 10, 5, 10,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        5,  20, 5,  5,  20, 5,  5,  20, 5,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        5,  20, 5,  5,  20, 5,  5,  20, 5,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
+        5,  20, 5,  5,  20, 5,  5,  20, 5,
+        10, 5,  10, 10, 5,  10, 10, 5,  10,
     ];
 
     let mut score = Score(0);
@@ -202,6 +208,8 @@ pub fn search<Node: NodeType>(
     shared: &SharedData,
     depth: i32,
     ply: u8,
+    mut alpha: Score,
+    beta: Score,
 ) -> Score {
     if !Node::ROOT && (thread.stop || shared.time_man.stop_search(thread)) {
         if thread.id == 0 {
@@ -237,7 +245,7 @@ pub fn search<Node: NodeType>(
         }
 
         pos.make_move(mv);
-        let score = -search::<Node::Next>(pos, thread, shared, depth - DEPTH_SCALE, ply + 1);
+        let score = -search::<Node::Next>(pos, thread, shared, depth - DEPTH_SCALE, ply + 1, -beta, -alpha);
         pos.unmake_move();
         move_count += 1;
 
@@ -252,12 +260,20 @@ pub fn search<Node: NodeType>(
         }
 
         if score > best_score {
+            best_score = score;
+        }
+
+        if score > alpha {
             let (parent, child) = thread.stack.split_at_mut(ply as usize + 1);
             let (parent, child) = (parent.last_mut().unwrap(), child.first().unwrap());
             parent.pv.update(mv, &child.pv);
 
             _best_move = Some(mv);
-            best_score = score;
+            alpha = score;
+        }
+
+        if score >= beta {
+            break;
         }
     }
 
