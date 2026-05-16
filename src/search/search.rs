@@ -229,7 +229,7 @@ pub fn search<Node: NodeType>(
 
     let mut _best_move = None;
     let mut best_score = Score::NONE;
-    let mut _move_count = 0;
+    let mut move_count = 0;
 
     for &mv in pos.board().gen_moves().iter() {
         if Node::ROOT && !thread.root_moves.contains(&mv) {
@@ -239,7 +239,13 @@ pub fn search<Node: NodeType>(
         pos.make_move(mv);
         let score = -search::<Node::Next>(pos, thread, shared, depth - DEPTH_SCALE, ply + 1);
         pos.unmake_move();
-        _move_count += 1;
+        move_count += 1;
+
+        if Node::ROOT && move_count == 1 {
+            let (parent, child) = thread.stack.split_at_mut(ply as usize + 1);
+            let (parent, child) = (parent.last_mut().unwrap(), child.first().unwrap());
+            parent.pv.update(mv, &child.pv);
+        }
 
         if thread.stop {
             return Score(0);
