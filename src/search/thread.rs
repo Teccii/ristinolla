@@ -1,11 +1,12 @@
-use crate::board::MoveList;
-use crate::search::{PrincipalVariation, TimeManager};
 use crate::{
-    search::{MAX_PLY, SearchStack, ThreadCommand, id_loop},
+    board::MoveList,
+    search::{
+        History, MAX_PLY, PrincipalVariation, SearchStack, ThreadCommand, TimeManager, id_loop,
+    },
     util::{BatchedAtomicCounter, Receiver},
 };
 use std::sync::{Arc, atomic::*};
-use crate::search::history::History;
+
 /*----------------------------------------------------------------*/
 
 pub const MAX_THREADS: u32 = 1024;

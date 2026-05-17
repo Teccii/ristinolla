@@ -180,10 +180,7 @@ impl UgiCommand {
     }
 
     #[inline]
-    fn parse_go(
-        reader: SplitAsciiWhitespace,
-        board: &Board,
-    ) -> Result<UgiCommand, UgiParseError> {
+    fn parse_go(reader: SplitAsciiWhitespace, board: &Board) -> Result<UgiCommand, UgiParseError> {
         use SearchLimit::*;
         use UgiCommand::*;
         use UgiParseError::*;

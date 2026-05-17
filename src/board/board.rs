@@ -62,9 +62,9 @@ impl TicTacToe {
 
 #[derive(Debug, Copy, Clone, Default)]
 pub struct Board {
-    pub(super) prev_mv: Option<Square>,
-    pub(super) small: [TicTacToe; 9],
-    pub(super) large: TicTacToe,
+    pub prev_mv: Option<Square>,
+    pub small: [TicTacToe; 9],
+    pub large: TicTacToe,
     pub(super) stm: Piece,
     pub(super) hash: u64,
     pub(super) ply: u8,

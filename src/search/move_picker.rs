@@ -1,7 +1,5 @@
+use crate::{position::Position, search::History, types::Square};
 use smallvec::{Array, SmallVec};
-use crate::position::Position;
-use crate::search::history::History;
-use crate::types::Square;
 
 /*----------------------------------------------------------------*/
 
@@ -39,7 +37,7 @@ pub enum Stage {
 
 pub struct MovePicker {
     stage: Stage,
-    moves: SmallVec<[ScoredMove; 32]>
+    moves: SmallVec<[ScoredMove; 32]>,
 }
 
 impl MovePicker {
@@ -47,7 +45,7 @@ impl MovePicker {
     pub fn new() -> Self {
         MovePicker {
             stage: Stage::GenMoves,
-            moves: SmallVec::new()
+            moves: SmallVec::new(),
         }
     }
 

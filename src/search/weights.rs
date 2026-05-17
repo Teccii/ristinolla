@@ -77,7 +77,7 @@ params! {
     main_malus_base   | MAIN_MALUS_BASE:   i64 => 128  | 64..=256;
     main_malus_scale1 | MAIN_MALUS_SCALE1: i64 => 128  | 64..=256;
     main_malus_max    | MAIN_MALUS_MAX:    i64 => 2048 | 1024..=4096;
-    
+
     soft_time_div | SOFT_TIME_DIV: u64 => 250648 | 196608..=294912;
     soft_time_inc | SOFT_TIME_INC: u64 => 4027   | 2048..=4096;
     hard_time_div | HARD_TIME_DIV: u64 => 111864 | 8192..=16384;

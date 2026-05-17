@@ -6,6 +6,7 @@ use crate::{
     ugi::{UgiCommand, UgiParseError},
 };
 use std::time::{Duration, Instant};
+
 /*----------------------------------------------------------------*/
 
 pub const ENGINE_VERSION: &str = env!("CARGO_PKG_VERSION");

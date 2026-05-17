@@ -1,6 +1,8 @@
-use crate::board::Board;
-use crate::search::{DEPTH_SCALE, W};
-use crate::types::{Piece, Square};
+use crate::{
+    board::Board,
+    search::{DEPTH_SCALE, W},
+    types::{Piece, Square},
+};
 
 /*----------------------------------------------------------------*/
 
@@ -29,7 +31,7 @@ pub struct MainEntry(i16);
 
 #[derive(Debug, Copy, Clone)]
 pub struct MainHistory {
-    entries: [[MainEntry; Square::COUNT]; Piece::COUNT]
+    entries: [[MainEntry; Square::COUNT]; Piece::COUNT],
 }
 
 impl MainHistory {
@@ -85,7 +87,6 @@ impl MainHistory {
 
 /*----------------------------------------------------------------*/
 
-
 #[derive(Debug, Copy, Clone)]
 pub struct History {
     main: MainHistory,
@@ -100,13 +101,7 @@ impl History {
     /*----------------------------------------------------------------*/
 
     #[inline]
-    pub fn update(
-        &mut self,
-        board: &Board,
-        depth: i32,
-        best_move: Square,
-        moves: &[Square],
-    ) {
+    pub fn update(&mut self, board: &Board, depth: i32, best_move: Square, moves: &[Square]) {
         self.main.update(board, depth, best_move, true);
         for &mv in moves {
             self.main.update(board, depth, mv, false);

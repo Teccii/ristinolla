@@ -1,13 +1,14 @@
-use crate::search::ThreadData;
 use crate::{
     board::MoveList,
-    search::{MAX_DEPTH, W},
+    search::{MAX_DEPTH, ThreadData, W},
     types::Piece,
     util::AtomicInstant,
 };
 use enum_map::enum_map;
-use std::time::Instant;
-use std::{sync::atomic::*, time::Duration};
+use std::{
+    sync::atomic::*,
+    time::{Duration, Instant},
+};
 
 pub const DEFAULT_OVERHEAD: u64 = 50;
 
