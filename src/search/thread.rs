@@ -5,6 +5,7 @@ use crate::{
     util::{BatchedAtomicCounter, Receiver},
 };
 use std::sync::{Arc, atomic::*};
+use crate::search::history::History;
 /*----------------------------------------------------------------*/
 
 pub const MAX_THREADS: u32 = 1024;
@@ -32,6 +33,7 @@ impl Default for SharedData {
 pub struct ThreadData {
     pub id: usize,
     pub sel_depth: usize,
+    pub hist: Box<History>,
     pub root_moves: MoveList,
     pub root_pv: PrincipalVariation,
     pub stack: Vec<SearchStack>,
@@ -45,6 +47,7 @@ impl ThreadData {
         ThreadData {
             id,
             sel_depth: 0,
+            hist: unsafe { Box::new_zeroed().assume_init() },
             root_moves: MoveList::new(),
             root_pv: PrincipalVariation::default(),
             stack: vec![SearchStack::default(); MAX_PLY + 1],
@@ -87,7 +90,9 @@ pub fn thread_loop(id: usize, mut rx: Receiver<ThreadCommand>, mut shared: Arc<S
                 shared = new_shared;
                 thread.nodes = BatchedAtomicCounter::new(shared.nodes.clone());
             }
-            ThreadCommand::NewGame => {}
+            ThreadCommand::NewGame => {
+                thread.hist = unsafe { Box::new_zeroed().assume_init() };
+            }
             ThreadCommand::Quit => return,
         }
     }

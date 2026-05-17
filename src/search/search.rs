@@ -6,6 +6,8 @@ use crate::{
     types::Square,
 };
 use std::{fmt::Write, sync::atomic::*};
+use smallvec::SmallVec;
+use crate::search::{MovePicker, ScoredMove};
 
 pub const MAX_PLY: usize = 81;
 pub const MAX_DEPTH: usize = 255;
@@ -235,11 +237,13 @@ pub fn search<Node: NodeType>(
         }
     }
 
-    let mut _best_move = None;
+    let mut best_move = None;
     let mut best_score = Score::NONE;
+    let mut move_picker = MovePicker::new();
     let mut move_count = 0;
 
-    for &mv in pos.board().gen_moves().iter() {
+    let mut moves: SmallVec<[Square; 32]> = SmallVec::new();
+    while let Some(ScoredMove(mv, _)) = move_picker.next(pos, &thread.hist) {
         if Node::ROOT && !thread.root_moves.contains(&mv) {
             continue;
         }
@@ -268,12 +272,17 @@ pub fn search<Node: NodeType>(
             let (parent, child) = (parent.last_mut().unwrap(), child.first().unwrap());
             parent.pv.update(mv, &child.pv);
 
-            _best_move = Some(mv);
+            best_move = Some(mv);
             alpha = score;
         }
 
         if score >= beta {
+            thread.hist.update(pos.board(), depth, best_move.unwrap(), &moves);
             break;
+        }
+
+        if best_move != Some(mv) {
+            moves.push(mv);
         }
     }
 
