@@ -27,7 +27,7 @@ impl SplitMix64 {
 
 #[derive(Debug, Clone)]
 pub struct Zobrist {
-    pub prev_move: [u64; Square::COUNT],
+    pub subboard: [u64; 9],
     pub pieces: [[u64; Square::COUNT]; Piece::COUNT],
     pub stm: u64,
 }
@@ -37,7 +37,7 @@ impl Zobrist {
     pub const fn new(seed: u64) -> Zobrist {
         let mut rng = SplitMix64::new(seed);
         let mut zobrist = Zobrist {
-            prev_move: [0; Square::COUNT],
+            subboard: [0; 9],
             pieces: [[0; Square::COUNT]; Piece::COUNT],
             stm: 0,
         };
@@ -53,10 +53,10 @@ impl Zobrist {
             piece += 1;
         }
 
-        let mut sq = 0;
-        while sq < Square::COUNT {
-            zobrist.prev_move[sq] = rng.next();
-            sq += 1;
+        let mut i = 0;
+        while i < 9 {
+            zobrist.subboard[i] = rng.next();
+            i += 1;
         }
 
         zobrist.stm = rng.next();

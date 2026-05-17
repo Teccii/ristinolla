@@ -131,6 +131,9 @@ impl Board {
 
     #[inline]
     pub fn make_move(&mut self, mv: Square) {
+        if let Some(mv) = self.prev_mv {
+            self.xor_move(mv);
+        }
         self.xor_piece(self.stm, mv);
 
         let index = mv.indices().0;
@@ -154,10 +157,10 @@ impl Board {
 
     #[inline]
     pub(super) fn xor_move(&mut self, mv: Square) {
-        if let Some(mv) = self.prev_mv {
-            self.hash ^= ZOBRIST.prev_move[mv];
+        let index = mv.indices().1;
+        if self.small[index].terminal_state().is_none() {
+            self.hash ^= ZOBRIST.subboard[index];
         }
-        self.hash ^= ZOBRIST.prev_move[mv];
         self.prev_mv = Some(mv);
     }
 
